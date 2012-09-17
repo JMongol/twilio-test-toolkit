@@ -9,3 +9,5 @@ test/dummy/.sass-cache
 .DS_Store
 
 *.sqlite3
+
+*.log

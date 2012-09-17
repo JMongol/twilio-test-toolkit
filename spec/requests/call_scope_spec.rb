@@ -66,6 +66,8 @@ describe TwilioTestToolkit::CallScope do
         
         # And is not the same call
         newcall.response_xml.should_not == @call.response_xml
+        # But it's linked
+        newcall.root_call.should == @call
         
         # And we did not modify the original call
         @call.current_path.should == testredirect_twilio_index_path

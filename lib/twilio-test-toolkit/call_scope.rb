@@ -139,10 +139,10 @@ module TwilioTestToolkit
         rack_test_session_wrapper = Capybara.current_session.driver      
         @response = rack_test_session_wrapper.post(@current_path, 
           :format => :xml, 
-          :CallSid => @sid, 
+          :CallSid => @root_call.sid, 
           :Digits => digits, 
-          :From => @from_number, 
-          :To => @to_number,
+          :From => @root_call.from_number, 
+          :To => @root_call.to_number,
           :AnsweredBy => (is_machine ? "machine" : "human")
         )
 
