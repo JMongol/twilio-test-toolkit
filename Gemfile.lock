@@ -2,7 +2,8 @@ PATH
   remote: .
   specs:
     twilio-test-toolkit (1.0.0)
-      capybara (~> 1.0)
+      capybara
+      uuidtools
 
 GEM
   remote: http://rubygems.org/
@@ -138,4 +139,3 @@ DEPENDENCIES
   sqlite3
   sqlite3-ruby
   twilio-test-toolkit!
-  uuidtools

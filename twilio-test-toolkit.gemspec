@@ -15,18 +15,19 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
-  s.test_files = Dir["test/**/*"]
+  s.test_files = Dir["spec/**/*"]
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
 
   s.require_paths = ["lib"]
   
-  s.add_dependency 'capybara', '~> 1.0'
+  s.add_dependency 'capybara'
+  s.add_dependency 'uuidtools'
   
   s.add_development_dependency "rails", "~> 3.2.8"
   s.add_development_dependency "sqlite3"  
   s.add_development_dependency "sqlite3-ruby"  
   s.add_development_dependency "rspec"  
-  s.add_development_dependency "rspec-rails"  
-  s.add_development_dependency "uuidtools"
+  s.add_development_dependency "rspec-rails" 
+  s.add_development_dependency "jquery-rails"
 end
 

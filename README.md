@@ -47,13 +47,39 @@ TTT doesn't yet support (but you should contribute them!)
 What's required
 ================
 
-TTT depends on [Capybara](https://github.com/jnicklas/capybara). It uses Capybara's session object to POST requests to your controllers, so get Capybara set up before you use TTT. Because of this, your TTT tests should normally go in spec/requests, unless you've relocated these tests elsewhere.
+TTT depends on [Capybara](https://github.com/jnicklas/capybara). It uses Capybara's session object to POST requests to your controllers. 
 
 TTT expects your controller actions to behave like well-behaved Twilio callbacks. That is, you need to respond to XML-formatted requests, and need to respond with a 200 OK. TTT also requires that your controller actions be wired for POST, not GET (Twilio does support GET, but TTT lacks this support). Twilio will not follow 301 or 302 redirects properly, and neither will TTT (see below for more details). 
 
 TTT has only been tested with RSpec on Rails. It might work on other test frameworks or other Rack-based frameworks. Feel free to submit pull requests to improve compatibility with these.
 
 If it works with Twilio, it should work with TTT. If not, open an issue/pull request.
+
+Getting started
+================
+
+First, get RSpec and Capybara working for your project. Then, you'll need to add this to your gemfile:
+
+	group :test do
+		...
+		gem 'twilio-test-toolkit'
+		...
+	end
+
+Since TTT is test-only code, it should be in the :test group.
+
+You'll have to make one more change in spec/spec_helper.rb:
+
+	RSpec.configure do |config|
+		...
+		# Configure Twilio Test Toolkit
+	  	config.include TwilioTestToolkit::DSL, :type => :request
+		...
+	end
+
+This line is required in order to get TTT's DSL to work with your tests.
+
+Finally, since TTT deals with integration tests, you should write your tests in spec/requests (or whatever directory you've configured for this type of test).
 
 How to use
 ================
