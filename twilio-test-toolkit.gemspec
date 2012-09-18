@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.description = "Better integration tests for apps that use Twilio"
   s.licenses = ["MIT"]
   
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
 
