@@ -1,7 +1,7 @@
 twilio-test-toolkit
 ===================
 
-Twilio Test Toolkit (TTT) makes writing RSpec integration tests for Twilio phone callbacks easy to write and understand.
+Twilio Test Toolkit (TTT) makes RSpec integration tests for Twilio phone callbacks easy to write and understand.
 
 When you initiate a [phone call with Twilio](http://www.twilio.com/docs/api/rest/making-calls), you must POST either a URL or an ApplicationSid that is configured with a URL. Twilio then POSTs to your URL, and you're expected to return a 200 OK and a valid [TwiML](http://www.twilio.com/docs/api/twiml) response. That response can be any valid TwiML - speak something, gather keystrokes, redirect, etc. 
 
@@ -89,9 +89,9 @@ This section describes how to use TTT and its basic functionality.
 ttt_call
 -------------
 
-The ttt_call method is the main entry point for working with TTT. You call this method to initiate a "Twilio phone call" to your controller actions. TTT simulates Twilio's behavior by POSTing to your action with the expected Twilio parameters (From, To, CallSid, etc). 
+The *ttt_call* method is the main entry point for working with TTT. You call this method to initiate a "Twilio phone call" to your controller actions. TTT simulates Twilio's behavior by POSTing to your action with the expected Twilio parameters (From, To, CallSid, etc). 
 
-ttt_call has three required parameters, and two optional ones:
+*ttt_call* has three required parameters, and two optional ones:
 
 	@call = ttt_call(action_path, from_number, to_number, call_sid = nil, is_machine = false)
 	
@@ -101,7 +101,7 @@ ttt_call has three required parameters, and two optional ones:
 * **call_sid**. Specify an optional fixed value to be passed as params[:CallSid]. This is useful if you are expecting a specific SID. For instance, a common pattern is to initiate a call, store the SID in your database, and look up the call when you get the callback. If you don't pass a SID, TTT will generate one for you that's just a UUID.
 * **is_machine**. Controls params[:AnsweredBy]. See Twilio's documentation for more information on how Twilio uses this.
 
-ttt_call returns a TwilioTestToolkit::CallInProgress object, which is a descendent of TwilioTestToolkit::CallScope. You'll want to save this object as it's how you interact with TTT.
+*ttt_call* returns a *TwilioTestToolkit::CallInProgress* object, which is a descendent of *TwilioTestToolkit::CallScope*. You'll want to save this object as it's how you interact with TTT.
 
 It's worth noting that TTT won't pass any of the parameters you need to [validate that a request comes from Twilio](http://www.twilio.com/docs/security). Most people seem to only do this check in production, so if that applies to you, this won't be an issue. If you do this check in dev and test, you might want to consider submitting a pull request with a fix.
 
@@ -143,8 +143,11 @@ Inspecting the contents of the call
 
 A common thing you'll want to do is inspect the various Say elements, and check for control elements like Dial and Hangup. 
 	
-	@call.has_say?("Foo")	# Returns true if there's a <Say> in the current scope that contains the text. Partial matches are OK, but the call is case sensitive.
-	@call.has_dial?("911")	# Returns true if there's a <Dial> in the current scope for the number. Partial matches are OK.
+	@call.has_say?("Foo")	# Returns true if there's a <Say> in the current scope 
+							# that contains the text. Partial matches are OK, but 
+							# the call is case sensitive.
+	@call.has_dial?("911")	# Returns true if there's a <Dial> in the current scope 
+							# for the number. Partial matches are OK.
 	@call.has_hangup?		# Returns true if there's a <Hangup> in the current scope.
 	
 These methods are available on any CallScope.
@@ -152,9 +155,9 @@ These methods are available on any CallScope.
 Gathers
 --------------
 
-Gathers are used to collect digits from the caller (e.g. "press 1 to speak with a representative, press 2 to cancel"). Twilio handles Gathers by speaking the contents of the Gather and waiting for a digit to be pressed. If nothing is pressed, it continues with the script. If something is pressed, it aborts processing the current script and POSTs the digits (via params[:Digits]) to the path specified by the action attribute. TTT handles Gathers in a similar way.
+Gathers are used to collect digits from the caller (e.g. "press 1 to speak with a representative, press 2 to cancel"). Twilio handles Gathers by speaking the contents of the Gather and waiting for a digit or digits to be pressed. If nothing is pressed, it continues with the script. If something is pressed, it aborts processing the current script and POSTs the digits (via params[:Digits]) to the path specified by the action attribute. TTT handles Gathers in a similar way.
 
-You can only interact with a gather by calling within_gather:
+You can only interact with a gather by calling *within_gather*:
 
 	@call.within_gather do |gather|
 		gather.should have_say("Enter your account number")
@@ -175,7 +178,7 @@ Within a gather CallScope, you can use the following methods:
 
 You can also use other CallScope methods (e.g. *has_say?* and similar.)
 
-The press method has a few caveats worth knowing. It's only callable once per gather - when you call it, TTT will immediately POST to the gather's action. There is no way to simulate pressing buttons slowly, and you don't really need to do this anyways - Twilio doesn't care. *press* simply fills out the value of params[:Digits] and POSTs that to your method. 
+The *press* method has a few caveats worth knowing. It's only callable once per gather - when you call it, TTT will immediately POST to the gather's action. There is no way to simulate pressing buttons slowly, and you don't really need to do this anyways - Twilio doesn't care and just passes them all at once. *press* simply fills out the value of params[:Digits] and POSTs that to your method, just like Twilio does.
 
 Although you can technically pass whatever you want to *press*, in practice Twilio only sends digits and #. Still it's probably a good idea to test garbage data in this parameter with your actions, so TTT doesn't get in your way if you want to call press with "UNICORNSANDPONIES" as a parameter.
 
@@ -189,9 +192,12 @@ The Redirect element is used to tell Twilio to POST to a different page. It diff
 There are several methods you can use within a CallScope related to redirects:
 
 	@call.has_redirect?					# Returns true if there's a <Redirect> element in the current scope.
-	@call.has_redirect_to?(path)		# Returns true if there's a <Redirect> element to the specified path in the current scope.
-	@call.follow_redirect				# Follows the <Redirect> in the current scope and returns a new CallScope object. The original scope is not modified.
-	@call.follow_redirect! 				# Follows the <Redirect> in the current scope and updates the scope to the new path. 
+	@call.has_redirect_to?(path)		# Returns true if there's a <Redirect> element to the specified path
+	 									# in the current scope.
+	@call.follow_redirect				# Follows the <Redirect> in the current scope and returns a new 
+										# CallScope object. The original scope is not modified.
+	@call.follow_redirect! 				# Follows the <Redirect> in the current scope and updates the scope 
+										# to the new path. 
 	
 Although it's allowed by TwiML (as of this writing), multiple Redirects in a scope aren't effectively allowed, as only the first one will ever be used. Thus, TTT only looks at the first Redirect it finds in the given scope.
 	
@@ -207,8 +213,9 @@ TTT is pretty basic, but it should work for most people's needs. You might consi
 * Build checks to validate the correctness of your TwiML.
 * Refactor wonky code (there's probably some in there somewhere)
 * Write more tests. There are basic tests, but more involved ones might be nice
+* Add support as needed for other test frameworks or Rack-based frameworks
 
-Contributions are welcome and encouraged. The usual deal applies - fork a branch, add tests, add your changes, submit a pull request.
+Contributions are welcome and encouraged. The usual deal applies - fork a branch, add tests, add your changes, submit a pull request. If I haven't done anything with your pull request in a reasonable amount of time, ping me on Twitter or email and I'll get on it.
 
 Credits
 ================
