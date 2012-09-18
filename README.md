@@ -5,7 +5,7 @@ Twilio Test Toolkit (TTT) makes writing RSpec integration tests for Twilio phone
 
 When you initiate a [phone call with Twilio](http://www.twilio.com/docs/api/rest/making-calls), you must POST either a URL or an ApplicationSid that is configured with a URL. Twilio then POSTs to your URL, and you're expected to return a 200 OK and a valid [TwiML](http://www.twilio.com/docs/api/twiml) response. That response can be any valid TwiML - speak something, gather keystrokes, redirect, etc. 
 
-Although it's pretty easy to test individual controller actions with the existing RSpec gem, testing more complex scenarios that use many controller actions (or controllers) is syntax-heavy and usually repetitive. TTT exists to make these larger scale integration tests easy and fun to write. TTT emulates the Twilio end of the Twilo phone callbacks, and allows to to emulate a user listening for a specific <Say> element, pressing keys on their phone, etc. With TTT, you can test your whole phone system built on Twilio.
+Although it's pretty easy to test individual controller actions with the existing RSpec gem, testing more complex scenarios that use many controller actions (or controllers) is syntax-heavy and usually repetitive. TTT exists to make these larger scale integration tests easy and fun to write. TTT emulates the Twilio end of the Twilo phone callbacks, and allows to to emulate a user listening for a specific Say element, pressing keys on their phone, etc. With TTT, you can test your whole phone system built on Twilio.
 
 For instance, let's say you have a controller that handles inbound Twilio calls and asks the user to enter an account number, then a PIN code, and then finally makes a menu selection. With TTT, you can just do this:
 
@@ -33,15 +33,15 @@ What's supported
 
 TTT supports most of the more common Twilio scenarios:
 
-* Checking for <Say> elements and their content
-* Taking action on <Gather> elements and querying their contents
+* Checking for Say elements and their content
+* Taking action on Gather elements and querying their contents
 * Following and querying redirects
 * Dial and Hangup
 
 TTT doesn't yet support (but you should contribute them!)
 
-* <Play>
-* <Queue>
+* Play
+* Queue
 * Any of the other conference calling features
 	
 What's required
@@ -119,7 +119,7 @@ You can use the CallInProgress object returned from *ttt_call* to inspect some b
 Call scopes
 --------------
 
-The CallInProgress object returned from *ttt_call* is a descendent of CallScope. A CallScope represents a scope within a call. For instance, the root TwiML <Response> element is a scope. A <Gather> within that is a scope. 
+The CallInProgress object returned from *ttt_call* is a descendent of CallScope. A CallScope represents a scope within a call. For instance, the root TwiML Response element is a scope. A Gather within that is a scope. 
 	
 For instance, let's say you have TwiML like this:
 	
@@ -130,7 +130,7 @@ For instance, let's say you have TwiML like this:
 		</Gather>
 	</Response>
 	
-The scope referred to by the CallInProgress object is the <Response> object. Only items that directly descend from this scope are seen by TTT. That is, the say for "Foo" is in the scope, but the say for "Bar" is not. The <Gather> is its own scope, and it contains the say for "Bar". TTT intentionally restricts you to accessing only what's in your scope because it helps you enforce a more rigid structure in your call, and allows you to handle multiple <Gathers> or similar in a given TwiML markup.
+The scope referred to by the CallInProgress object is the Response object. Only items that directly descend from this scope are seen by TTT. That is, the say for "Foo" is in the scope, but the say for "Bar" is not. The Gather is its own scope, and it contains the say for "Bar". TTT intentionally restricts you to accessing only what's in your scope because it helps you enforce a more rigid structure in your call, and allows you to handle multiple Gathers or similar in a given TwiML markup.
 
 CallScope has some properties that are also useful:
 
@@ -141,7 +141,7 @@ CallScope has some properties that are also useful:
 Inspecting the contents of the call
 --------------
 
-A common thing you'll want to do is inspect the various <Say> elements, and check for control elements like <Dial> and <Hangup>. 
+A common thing you'll want to do is inspect the various Say elements, and check for control elements like Dial and Hangup. 
 	
 	@call.has_say?("Foo")	# Returns true if there's a <Say> in the current scope that contains the text. Partial matches are OK, but the call is case sensitive.
 	@call.has_dial?("911")	# Returns true if there's a <Dial> in the current scope for the number. Partial matches are OK.
@@ -161,9 +161,9 @@ You can only interact with a gather by calling within_gather:
 		gather.press "12345"
 	end
 
-*within_gather* creates a new CallScope and passes it to the yielded parameter (gather in the example above). *within_gather* will fail if there is no <Gather> element in the current scope. 
+*within_gather* creates a new CallScope and passes it to the yielded parameter (gather in the example above). *within_gather* will fail if there is no Gather element in the current scope. 
 	
-You can verify the existence of a <Gather> in the current scope with:
+You can verify the existence of a Gather in the current scope with:
 	
 	@call.has_gather?		# Returns true if the current scope has a gather.
 	
@@ -179,12 +179,12 @@ The press method has a few caveats worth knowing. It's only callable once per ga
 
 Although you can technically pass whatever you want to *press*, in practice Twilio only sends digits and #. Still it's probably a good idea to test garbage data in this parameter with your actions, so TTT doesn't get in your way if you want to call press with "UNICORNSANDPONIES" as a parameter.
 
-TTT doesn't attempt to validate your TwiML, so it's worth knowing that <Gather> only allows <Say>, <Pause>, and <Play> as child elements. Nested <Gather>s are not supported.
+TTT doesn't attempt to validate your TwiML, so it's worth knowing that Gather only allows Say, Pause, and Play as child elements. Nested Gathers are not supported.
 	
 Redirects
 --------------
 
-The <Redirect> element is used to tell Twilio to POST to a different page. It differs from a standard 301 or 302 redirect (created by a *redirect_to*) in that the 301/302 redirects don't support a POST, and if you try a *redirect_to* within a Twilio action, Twilio will fail and your caller will get the dreaded "I'm sorry, an application error has occurred" message. Because Twilio doesn't support 301/302 redirects, TTT doesn't either, and if you use one, TTT will complain.
+The Redirect element is used to tell Twilio to POST to a different page. It differs from a standard 301 or 302 redirect (created by a *redirect_to*) in that the 301/302 redirects don't support a POST, and if you try a *redirect_to* within a Twilio action, Twilio will fail and your caller will get the dreaded "I'm sorry, an application error has occurred" message. Because Twilio doesn't support 301/302 redirects, TTT doesn't either, and if you use one, TTT will complain.
 	
 There are several methods you can use within a CallScope related to redirects:
 
@@ -193,7 +193,7 @@ There are several methods you can use within a CallScope related to redirects:
 	@call.follow_redirect				# Follows the <Redirect> in the current scope and returns a new CallScope object. The original scope is not modified.
 	@call.follow_redirect! 				# Follows the <Redirect> in the current scope and updates the scope to the new path. 
 	
-Although it's allowed by TwiML (as of this writing), multiple <Redirect>s in a scope aren't effectively allowed, as only the first one will ever be used. Thus, TTT only looks at the first <Redirect> it finds in the given scope.
+Although it's allowed by TwiML (as of this writing), multiple Redirects in a scope aren't effectively allowed, as only the first one will ever be used. Thus, TTT only looks at the first Redirect it finds in the given scope.
 	
 Contributing
 ================
