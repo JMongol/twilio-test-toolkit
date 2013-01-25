@@ -77,7 +77,7 @@ module TwilioTestToolkit
       path = gather_action
 
       # Update the root call
-      root_call.post_for_twiml!(path, digits)
+      root_call.post_for_twiml!(path, :digits => digits)
     end
 
     # Some basic accessors
@@ -119,7 +119,7 @@ module TwilioTestToolkit
       def self.from_post(parent, path, digits = "")
         new_scope = CallScope.new
         new_scope.send(:root_call=, parent.root_call)
-        new_scope.send(:post_for_twiml!, path, digits)
+        new_scope.send(:post_for_twiml!, path, :digits => digits)
         return new_scope
       end
 
@@ -131,8 +131,10 @@ module TwilioTestToolkit
         return p
       end
 
-      # Post and update the scope
-      def post_for_twiml!(path, digits = "", is_machine = false)
+      # Post and update the scope. Options:
+      # :digits - becomes params[:Digits], optional (becomes "")
+      # :is_machine - becomes params[:AnsweredBy], defaults to false / human
+      def post_for_twiml!(path, options = {})
         @current_path = normalize_redirect_path(path)
 
         # Post the query
@@ -140,10 +142,10 @@ module TwilioTestToolkit
         @response = rack_test_session_wrapper.post(@current_path, 
           :format => :xml, 
           :CallSid => @root_call.sid, 
-          :Digits => digits, 
           :From => @root_call.from_number, 
+          :Digits => options[:digits] || "",
           :To => @root_call.to_number,
-          :AnsweredBy => (is_machine ? "machine" : "human")
+          :AnsweredBy => (options[:is_machine] ? "machine" : "human")
         )
 
         # All Twilio responses must be a success.

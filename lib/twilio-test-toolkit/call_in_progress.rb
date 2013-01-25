@@ -24,7 +24,7 @@ module TwilioTestToolkit
       self.root_call = self
 
       # Create the request
-      post_for_twiml!(@initial_path, "", @is_machine)
+      post_for_twiml!(@initial_path, :is_machine => @is_machine)
     end
 
     def sid
