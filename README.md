@@ -91,13 +91,16 @@ ttt_call
 
 The *ttt_call* method is the main entry point for working with TTT. You call this method to initiate a "Twilio phone call" to your controller actions. TTT simulates Twilio's behavior by POSTing to your action with the expected Twilio parameters (From, To, CallSid, etc). 
 
-*ttt_call* has three required parameters, and two optional ones:
+*ttt_call* has three required parameters and an options hash:
 
-	@call = ttt_call(action_path, from_number, to_number, call_sid = nil, is_machine = false)
+	@call = ttt_call(action_path, from_number, to_number, options = {})
 	
 * **action_path**. Where to POST your request. It should be obvious by now, but whatever action you specify here should be a POST action.
 * **from_number**. What to fill params[:From] with. If you don't care about this value, you can pass a blank one, as this is only used to pass along to your actions.
 * **to_number**. What to fill params[:To] with.
+
+Options are:
+
 * **call_sid**. Specify an optional fixed value to be passed as params[:CallSid]. This is useful if you are expecting a specific SID. For instance, a common pattern is to initiate a call, store the SID in your database, and look up the call when you get the callback. If you don't pass a SID, TTT will generate one for you that's just a UUID.
 * **is_machine**. Controls params[:AnsweredBy]. See Twilio's documentation for more information on how Twilio uses this.
 

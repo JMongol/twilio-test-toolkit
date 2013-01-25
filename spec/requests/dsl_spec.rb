@@ -31,7 +31,7 @@ describe TwilioTestToolkit::DSL do
     describe "with a sid and machine override" do
       before(:each) do
         @mysid = "1234567"
-        @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number, @mysid, true)
+        @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number, :call_sid => @mysid, :is_machine => true)
       end
       
       it "should have the right sid" do
