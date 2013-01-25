@@ -217,6 +217,15 @@ TTT is pretty basic, but it should work for most people's needs. You might consi
 
 Contributions are welcome and encouraged. The usual deal applies - fork a branch, add tests, add your changes, submit a pull request. If I haven't done anything with your pull request in a reasonable amount of time, ping me on Twitter or email and I'll get on it.
 
+Running Tests
+----------------
+
+	bundle install
+	cd spec/dummy
+	bundle exec rake db:create
+	cd ../..
+	bundle exec rspec
+
 Credits
 ================
 
