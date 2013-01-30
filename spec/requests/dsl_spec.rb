@@ -9,7 +9,7 @@ describe TwilioTestToolkit::DSL do
   describe "ttt_call" do
     describe "basics" do
       before(:each) do
-        @call = ttt_call(teststart_twilio_index_path, @our_number, @their_number)                
+        @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number)
       end
     
       it "should assign the call" do
@@ -21,7 +21,7 @@ describe TwilioTestToolkit::DSL do
       end
       
       it "should have the right properties" do
-        @call.initial_path.should == teststart_twilio_index_path
+        @call.initial_path.should == test_start_twilio_index_path
         @call.from_number.should == @our_number
         @call.to_number.should == @their_number
         @call.is_machine.should be_false
@@ -31,7 +31,7 @@ describe TwilioTestToolkit::DSL do
     describe "with a sid and machine override" do
       before(:each) do
         @mysid = "1234567"
-        @call = ttt_call(teststart_twilio_index_path, @our_number, @their_number, @mysid, true)                
+        @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number, @mysid, true)
       end
       
       it "should have the right sid" do
