@@ -12,14 +12,14 @@ module TwilioTestToolkit
       el = get_redirect_node
       raise "No redirect" if el.nil?
 
-      return CallScope.from_post(self, el.text)
+      return CallScope.from_request(self, el.text, :method =>el[:method])
     end
 
     def follow_redirect!
       el = get_redirect_node
       raise "No redirect" if el.nil?
 
-      post_for_twiml!(normalize_redirect_path(el.text))
+      request_for_twiml!(normalize_redirect_path(el.text), :method => el[:method])
     end
 
     # Stuff for Says
@@ -66,8 +66,13 @@ module TwilioTestToolkit
     end
     
     def gather_action
-      rasie "Not a gather" unless gather?
+      raise "Not a gather" unless gather?
       return @xml["action"]
+    end
+
+    def gather_method
+      raise "Not a gather" unless gather?
+      return @xml["method"]
     end
 
     def press(digits)
@@ -77,7 +82,7 @@ module TwilioTestToolkit
       path = gather_action
 
       # Update the root call
-      root_call.post_for_twiml!(path, digits)
+      root_call.request_for_twiml!(path, :digits => digits, :method => gather_method)
     end
 
     # Some basic accessors
@@ -115,11 +120,13 @@ module TwilioTestToolkit
         @xml = xml
       end
 
-      # Create a new object from a post
-      def self.from_post(parent, path, digits = "")
+      # Create a new object from a post. Options:
+      # * :method - the http method of the request, defaults to :post
+      # * :digits - becomes params[:Digits], defaults to ""
+      def self.from_request(parent, path, options = {})
         new_scope = CallScope.new
         new_scope.send(:root_call=, parent.root_call)
-        new_scope.send(:post_for_twiml!, path, digits)
+        new_scope.send(:request_for_twiml!, path, :digits => options[:digits] || "", :method => options[:method] || :post)
         return new_scope
       end
 
@@ -131,19 +138,21 @@ module TwilioTestToolkit
         return p
       end
 
-      # Post and update the scope
-      def post_for_twiml!(path, digits = "", is_machine = false)
+      # Post and update the scope. Options:
+      # :digits - becomes params[:Digits], optional (becomes "")
+      # :is_machine - becomes params[:AnsweredBy], defaults to false / human
+      def request_for_twiml!(path, options = {})
         @current_path = normalize_redirect_path(path)
 
         # Post the query
         rack_test_session_wrapper = Capybara.current_session.driver      
-        @response = rack_test_session_wrapper.post(@current_path, 
+        @response = rack_test_session_wrapper.send(options[:method] || :post, @current_path,
           :format => :xml, 
           :CallSid => @root_call.sid, 
-          :Digits => digits, 
           :From => @root_call.from_number, 
+          :Digits => options[:digits] || "",
           :To => @root_call.to_number,
-          :AnsweredBy => (is_machine ? "machine" : "human")
+          :AnsweredBy => (options[:is_machine] ? "machine" : "human")
         )
 
         # All Twilio responses must be a success.

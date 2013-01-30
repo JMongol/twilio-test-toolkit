@@ -8,7 +8,7 @@ describe TwilioTestToolkit::CallScope do
   
   describe "basics" do
     before(:each) do
-      @call = ttt_call(teststart_twilio_index_path, @our_number, @their_number)
+      @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number)
     end
     
     it "should be a CallScope" do
@@ -21,7 +21,7 @@ describe TwilioTestToolkit::CallScope do
     end
     
     it "should have the right path" do
-      @call.current_path.should == teststart_twilio_index_path
+      @call.current_path.should == test_start_twilio_index_path
     end
     
     it "should have a response xml value" do
@@ -37,7 +37,7 @@ describe TwilioTestToolkit::CallScope do
   describe "redirect" do
     describe "success" do
       before(:each) do
-        @call = ttt_call(testredirect_twilio_index_path, @our_number, @their_number)
+        @call = ttt_call(test_redirect_twilio_index_path, @our_number, @their_number)
       end
     
       it "should have the redirect methods" do
@@ -53,8 +53,8 @@ describe TwilioTestToolkit::CallScope do
     
       it "should have the right values for has_redirect_to?" do
         @call.has_redirect_to?("http://foo").should be_false
-        @call.has_redirect_to?(teststart_twilio_index_path).should be_true
-        @call.has_redirect_to?(teststart_twilio_index_path + ".xml").should be_true    # Should force normalization
+        @call.has_redirect_to?(test_start_twilio_index_path).should be_true
+        @call.has_redirect_to?(test_start_twilio_index_path + ".xml").should be_true    # Should force normalization
       end
       
       it "should follow the redirect (immutable version)" do
@@ -62,7 +62,7 @@ describe TwilioTestToolkit::CallScope do
         newcall = @call.follow_redirect
         
         # Make sure it followed
-        newcall.current_path.should == teststart_twilio_index_path
+        newcall.current_path.should == test_start_twilio_index_path
         
         # And is not the same call
         newcall.response_xml.should_not == @call.response_xml
@@ -70,7 +70,7 @@ describe TwilioTestToolkit::CallScope do
         newcall.root_call.should == @call
         
         # And we did not modify the original call
-        @call.current_path.should == testredirect_twilio_index_path
+        @call.current_path.should == test_redirect_twilio_index_path
       end
       
       it "should follow the redirect (mutable version)" do
@@ -78,14 +78,14 @@ describe TwilioTestToolkit::CallScope do
         @call.follow_redirect!
         
         # Make sure it followed
-        @call.current_path.should == teststart_twilio_index_path
+        @call.current_path.should == test_start_twilio_index_path
       end
     end
     
     describe "failure" do
       before(:each) do
         # Initiate a call that's not on a redirect - various calls will fail
-        @call = ttt_call(testsay_twilio_index_path, @our_number, @their_number)        
+        @call = ttt_call(test_say_twilio_index_path, @our_number, @their_number)
       end
       
       it "should have the right value for has_redirect?" do
@@ -94,8 +94,8 @@ describe TwilioTestToolkit::CallScope do
       
       it "should have the right values for has_redirect_to?" do
         @call.has_redirect_to?("http://foo").should be_false
-        @call.has_redirect_to?(teststart_twilio_index_path).should be_false
-        @call.has_redirect_to?(teststart_twilio_index_path + ".xml").should be_false
+        @call.has_redirect_to?(test_start_twilio_index_path).should be_false
+        @call.has_redirect_to?(test_start_twilio_index_path + ".xml").should be_false
       end
       
       it "should raise an error on follow_redirect" do
@@ -110,7 +110,7 @@ describe TwilioTestToolkit::CallScope do
   
   describe "say" do
     before(:each) do
-      @call = ttt_call(testsay_twilio_index_path, @our_number, @their_number)
+      @call = ttt_call(test_say_twilio_index_path, @our_number, @their_number)
     end
     
     it "should have the expected say methods" do
@@ -126,7 +126,7 @@ describe TwilioTestToolkit::CallScope do
   
   describe "dial" do
     before(:each) do
-      @call = ttt_call(testdial_twilio_index_path, @our_number, @their_number)
+      @call = ttt_call(test_dial_twilio_index_path, @our_number, @their_number)
     end
 
     it "should have the expected dial methods" do
@@ -143,7 +143,7 @@ describe TwilioTestToolkit::CallScope do
   describe "hangup" do
     describe "success" do
       before(:each) do
-        @call = ttt_call(testhangup_twilio_index_path, @our_number, @their_number)
+        @call = ttt_call(test_hangup_twilio_index_path, @our_number, @their_number)
       end
 
       it "should have the expected hangup methods" do
@@ -157,7 +157,7 @@ describe TwilioTestToolkit::CallScope do
     
     describe "failure" do
       before(:each) do
-        @call = ttt_call(teststart_twilio_index_path, @our_number, @their_number)
+        @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number)
       end
 
       it "should have the right value for has_hangup?" do
@@ -169,7 +169,7 @@ describe TwilioTestToolkit::CallScope do
   describe "gather" do
     describe "success" do
       before(:each) do
-        @call = ttt_call(teststart_twilio_index_path, @our_number, @their_number)
+        @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number)
       end
 
       it "should have the expected gather methods" do
@@ -206,7 +206,7 @@ describe TwilioTestToolkit::CallScope do
           # We should be in a gather
           gather.gather?.should be_true
           # And we should have an action
-          gather.gather_action.should == testaction_twilio_index_path
+          gather.gather_action.should == test_action_twilio_index_path
           
           # And we should have the right root call
           gather.root_call.should == @call
@@ -216,7 +216,7 @@ describe TwilioTestToolkit::CallScope do
         end
         
         # This should update the path
-        @call.current_path.should == testaction_twilio_index_path
+        @call.current_path.should == test_action_twilio_index_path
         
         # This view says the digits we pressed - make sure
         @call.should have_say "You entered 98765"
@@ -228,13 +228,13 @@ describe TwilioTestToolkit::CallScope do
         end
         
         # We should still be on the same page
-        @call.current_path.should == teststart_twilio_index_path
+        @call.current_path.should == test_start_twilio_index_path
       end
     end
     
     describe "failure" do
       before(:each) do
-        @call = ttt_call(testsay_twilio_index_path, @our_number, @their_number)
+        @call = ttt_call(test_say_twilio_index_path, @our_number, @their_number)
       end
       
       it "should have the right value for has_gather?" do

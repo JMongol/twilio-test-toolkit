@@ -3,26 +3,30 @@ require "twilio-test-toolkit/call_scope"
 module TwilioTestToolkit
   # Models a call
   class CallInProgress < CallScope
-    # Init the call
-    def initialize(initial_path, from_number, to_number, call_sid, is_machine)
+    # Initiate a call. Options:
+    # * :method - specify the http method of the initial api call
+    # * :call_sid - specify an optional fixed value to be passed as params[:CallSid]
+    # * :is_machine - controls params[:AnsweredBy]
+    def initialize(initial_path, from_number, to_number, options = {})
       # Save our variables for later
       @initial_path = initial_path
       @from_number = from_number
       @to_number = to_number
-      @is_machine = is_machine
+      @is_machine = options[:is_machine]
+      @method = options[:method] || :post
 
       # Generate an initial call SID if we don't have one
-      if (call_sid.nil?)
+      if (options[:call_sid].nil?)
         @sid = UUIDTools::UUID.random_create.to_s
       else
-        @sid = call_sid
+        @sid = options[:call_sid]
       end
 
       # We are the root call
       self.root_call = self
 
       # Create the request
-      post_for_twiml!(@initial_path, "", @is_machine)
+      request_for_twiml!(@initial_path, :method => @method, :is_machine => @is_machine)
     end
 
     def sid
@@ -43,6 +47,10 @@ module TwilioTestToolkit
   
     def is_machine
       @is_machine
+    end
+
+    def method
+      @method
     end
   end
 end
