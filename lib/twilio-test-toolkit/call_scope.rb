@@ -66,12 +66,12 @@ module TwilioTestToolkit
     end
     
     def gather_action
-      rasie "Not a gather" unless gather?
+      raise "Not a gather" unless gather?
       return @xml["action"]
     end
 
     def gather_method
-      rasie "Not a gather" unless gather?
+      raise "Not a gather" unless gather?
       return @xml["method"]
     end
 
