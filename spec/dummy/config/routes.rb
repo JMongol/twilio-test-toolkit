@@ -1,5 +1,6 @@
 Dummy::Application.routes.draw do
   resources :twilio do
+    get "test_start", :on => :collection
     post "test_start", :on => :collection
     post "test_action", :on => :collection
         

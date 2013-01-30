@@ -4,6 +4,7 @@ module TwilioTestToolkit
   # Adds the `ttt_call` method to the top-level namespace.
   module DSL
     # Initiate a call. Options:
+    # * :method - specify the http method of the initial api call
     # * :call_sid - specify an optional fixed value to be passed as params[:CallSid]
     # * :is_machine - controls params[:AnsweredBy]
     def ttt_call(initial_path, from_number, to_number, options = {})

@@ -20,6 +20,10 @@ describe TwilioTestToolkit::DSL do
         @call.sid.should_not be_blank
       end
       
+      it "should default the method to post" do
+        @call.method.should == :post
+      end
+
       it "should have the right properties" do
         @call.initial_path.should == test_start_twilio_index_path
         @call.from_number.should == @our_number
@@ -28,10 +32,10 @@ describe TwilioTestToolkit::DSL do
       end      
     end
     
-    describe "with a sid and machine override" do
+    describe "with a sid, method and machine override" do
       before(:each) do
         @mysid = "1234567"
-        @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number, :call_sid => @mysid, :is_machine => true)
+        @call = ttt_call(test_start_twilio_index_path, @our_number, @their_number, :call_sid => @mysid, :is_machine => true, :method => :get)
       end
       
       it "should have the right sid" do
@@ -40,6 +44,10 @@ describe TwilioTestToolkit::DSL do
       
       it "should be a machine call" do        
         @call.is_machine.should be_true
+      end
+
+      it "should be a get call" do
+        @call.method.should == :get
       end
     end
   end

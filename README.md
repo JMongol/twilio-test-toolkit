@@ -47,9 +47,9 @@ TTT doesn't yet support (but you should contribute them!)
 What's required
 ================
 
-TTT depends on [Capybara](https://github.com/jnicklas/capybara). It uses Capybara's session object to POST requests to your controllers. 
+TTT depends on [Capybara](https://github.com/jnicklas/capybara). It uses Capybara's session object to make requests to your controllers. 
 
-TTT expects your controller actions to behave like well-behaved Twilio callbacks. That is, you need to respond to XML-formatted requests, and need to respond with a 200 OK. TTT also requires that your controller actions be wired for POST, not GET (Twilio does support GET, but TTT lacks this support). Twilio will not follow 301 or 302 redirects properly, and neither will TTT (see below for more details). 
+TTT expects your controller actions to behave like well-behaved Twilio callbacks. That is, you need to respond to XML-formatted requests, and need to respond with a 200 OK. Twilio will not follow 301 or 302 redirects properly, and neither will TTT (see below for more details). 
 
 TTT has only been tested with RSpec on Rails. It might work on other test frameworks or other Rack-based frameworks. Feel free to submit pull requests to improve compatibility with these.
 
@@ -89,18 +89,19 @@ This section describes how to use TTT and its basic functionality.
 ttt_call
 -------------
 
-The *ttt_call* method is the main entry point for working with TTT. You call this method to initiate a "Twilio phone call" to your controller actions. TTT simulates Twilio's behavior by POSTing to your action with the expected Twilio parameters (From, To, CallSid, etc). 
+The *ttt_call* method is the main entry point for working with TTT. You call this method to initiate a "Twilio phone call" to your controller actions. TTT simulates Twilio's behavior by making requests to your action with the expected Twilio parameters (From, To, CallSid, etc). 
 
 *ttt_call* has three required parameters and an options hash:
 
 	@call = ttt_call(action_path, from_number, to_number, options = {})
 	
-* **action_path**. Where to POST your request. It should be obvious by now, but whatever action you specify here should be a POST action.
+* **action_path**. Where to make your request.  By default this will be a POST, but you can override it with the options hash.
 * **from_number**. What to fill params[:From] with. If you don't care about this value, you can pass a blank one, as this is only used to pass along to your actions.
 * **to_number**. What to fill params[:To] with.
 
 Options are:
 
+* **method** . Specify the http method of the initial request. By default this will be :post.
 * **call_sid**. Specify an optional fixed value to be passed as params[:CallSid]. This is useful if you are expecting a specific SID. For instance, a common pattern is to initiate a call, store the SID in your database, and look up the call when you get the callback. If you don't pass a SID, TTT will generate one for you that's just a UUID.
 * **is_machine**. Controls params[:AnsweredBy]. See Twilio's documentation for more information on how Twilio uses this.
 
@@ -158,7 +159,7 @@ These methods are available on any CallScope.
 Gathers
 --------------
 
-Gathers are used to collect digits from the caller (e.g. "press 1 to speak with a representative, press 2 to cancel"). Twilio handles Gathers by speaking the contents of the Gather and waiting for a digit or digits to be pressed. If nothing is pressed, it continues with the script. If something is pressed, it aborts processing the current script and POSTs the digits (via params[:Digits]) to the path specified by the action attribute. TTT handles Gathers in a similar way.
+Gathers are used to collect digits from the caller (e.g. "press 1 to speak with a representative, press 2 to cancel"). Twilio handles Gathers by speaking the contents of the Gather and waiting for a digit or digits to be pressed. If nothing is pressed, it continues with the script. If something is pressed, it aborts processing the current script and makes a request with the digits (via params[:Digits]) to the path specified by the action attribute.  If no method is specified in the options, this will be a post TTT handles Gathers in a similar way.
 
 You can only interact with a gather by calling *within_gather*:
 
@@ -181,7 +182,7 @@ Within a gather CallScope, you can use the following methods:
 
 You can also use other CallScope methods (e.g. *has_say?* and similar.)
 
-The *press* method has a few caveats worth knowing. It's only callable once per gather - when you call it, TTT will immediately POST to the gather's action. There is no way to simulate pressing buttons slowly, and you don't really need to do this anyways - Twilio doesn't care and just passes them all at once. *press* simply fills out the value of params[:Digits] and POSTs that to your method, just like Twilio does.
+The *press* method has a few caveats worth knowing. It's only callable once per gather - when you call it, TTT will immediately call the gather's action. There is no way to simulate pressing buttons slowly, and you don't really need to do this anyways - Twilio doesn't care and just passes them all at once. *press* simply fills out the value of params[:Digits] and calls your method, just like Twilio does.
 
 Although you can technically pass whatever you want to *press*, in practice Twilio only sends digits and #. Still it's probably a good idea to test garbage data in this parameter with your actions, so TTT doesn't get in your way if you want to call press with "UNICORNSANDPONIES" as a parameter.
 
@@ -190,7 +191,7 @@ TTT doesn't attempt to validate your TwiML, so it's worth knowing that Gather on
 Redirects
 --------------
 
-The Redirect element is used to tell Twilio to POST to a different page. It differs from a standard 301 or 302 redirect (created by a *redirect_to*) in that the 301/302 redirects don't support a POST, and if you try a *redirect_to* within a Twilio action, Twilio will fail and your caller will get the dreaded "I'm sorry, an application error has occurred" message. Because Twilio doesn't support 301/302 redirects, TTT doesn't either, and if you use one, TTT will complain.
+The Redirect element is used to tell Twilio to call a different page. It differs from a standard 301 or 302 redirect (created by a *redirect_to*) in that the 301/302 redirects don't support a POST, and if you try a *redirect_to* within a Twilio action, Twilio will fail and your caller will get the dreaded "I'm sorry, an application error has occurred" message. Because Twilio doesn't support 301/302 redirects, TTT doesn't either, and if you use one, TTT will complain.
 	
 There are several methods you can use within a CallScope related to redirects:
 
@@ -210,7 +211,6 @@ Contributing
 TTT is pretty basic, but it should work for most people's needs. You might consider helping to improve it. Some things that could be done:
 
 * Support more Twilio functionality
-* Support GET actions. Twilio technically supports this, although it doesn't seem to be used very often.
 * Build more stringent checks into says and plays - e.g. verify that there's enough of a pause between sentences.
 * Build checks to make sure that numbers, dates, and other special text is spoken properly (e.g. "one two three" instead of "one hundred twenty three").
 * Build checks to validate the correctness of your TwiML.
