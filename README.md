@@ -68,12 +68,21 @@ First, get RSpec and Capybara working for your project. Then, you'll need to add
 
 Since TTT is test-only code, it should be in the :test group.
 
-You'll have to make one more change in spec/spec_helper.rb:
+You'll have to make one more change in spec/spec_helper.rb. If you are using Capybara 1.x, do this:
 
 	RSpec.configure do |config|
 		...
 		# Configure Twilio Test Toolkit
 	  	config.include TwilioTestToolkit::DSL, :type => :request
+		...
+	end
+
+For Capybara 2.0, the "requests" directory is now called "features", so you need this instead:
+
+	RSpec.configure do |config|
+		...
+		# Configure Twilio Test Toolkit
+	  	config.include TwilioTestToolkit::DSL, :type => :feature
 		...
 	end
 
