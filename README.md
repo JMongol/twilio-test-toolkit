@@ -34,13 +34,13 @@ What's supported
 TTT supports most of the more common Twilio scenarios:
 
 * Checking for Say elements and their content
+* Checking for Play elements and their content
 * Taking action on Gather elements and querying their contents
 * Following and querying redirects
 * Dial and Hangup
 
 TTT doesn't yet support (but you should contribute them!)
 
-* Play
 * Queue
 * Any of the other conference calling features
 	

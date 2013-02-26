@@ -31,6 +31,15 @@ module TwilioTestToolkit
       return false
     end
 
+    # Stuff for Plays
+    def has_play?(play)
+      @xml.xpath("Play").each do |s|
+        return true if s.inner_text == play
+      end
+
+      return false
+    end
+
     # Stuff for Dials
     def has_dial?(number)
       @xml.xpath("Dial").each do |s|
