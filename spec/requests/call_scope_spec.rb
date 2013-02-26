@@ -124,6 +124,22 @@ describe TwilioTestToolkit::CallScope do
     end
   end
   
+  describe "play" do
+    before(:each) do
+      @call = ttt_call(test_play_twilio_index_path, @our_number, @their_number)
+    end
+
+    it "should have the expected say play methods" do
+      @call.should respond_to(:has_play?)
+    end
+
+    it "should have the right values for has_say?" do
+      @call.has_play?("/path/to/a/different/audio/clip.mp3").should be_false
+      @call.has_play?("/path/to/an/audio/clip.mp3").should be_true
+      @call.has_play?("clip.mp3").should be_false
+    end
+  end
+
   describe "dial" do
     before(:each) do
       @call = ttt_call(test_dial_twilio_index_path, @our_number, @their_number)

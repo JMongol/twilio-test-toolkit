@@ -8,5 +8,6 @@ Dummy::Application.routes.draw do
     post "test_dial", :on => :collection
     post "test_redirect", :on => :collection
     post "test_say", :on => :collection
-  end  
+    post "test_play", :on => :collection
+  end
 end
