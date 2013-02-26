@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'capybara'
   s.add_dependency 'uuidtools'
   
-  s.add_development_dependency "rails", "~> 3.2.8"
+  s.add_development_dependency "rails", "~> 3.2.12"
   s.add_development_dependency "sqlite3"  
   s.add_development_dependency "sqlite3-ruby"  
   s.add_development_dependency "rspec"  

@@ -21,7 +21,7 @@ describe TwilioTestToolkit::DSL do
       end
       
       it "should default the method to post" do
-        @call.method.should == :post
+        @call.http_method.should == :post
       end
 
       it "should have the right properties" do
@@ -47,7 +47,7 @@ describe TwilioTestToolkit::DSL do
       end
 
       it "should be a get call" do
-        @call.method.should == :get
+        @call.http_method.should == :get
       end
     end
   end

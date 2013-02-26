@@ -49,7 +49,7 @@ module TwilioTestToolkit
       @is_machine
     end
 
-    def method
+    def http_method
       @method
     end
   end
