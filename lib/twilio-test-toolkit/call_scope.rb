@@ -84,6 +84,11 @@ module TwilioTestToolkit
       return @xml["method"]
     end
 
+    def gather_finish_on_key
+      raise "Not a gather" unless gather?
+      return @xml["finishOnKey"]
+    end
+
     def press(digits)
       raise "Not a gather" unless gather?
 
