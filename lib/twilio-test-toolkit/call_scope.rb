@@ -121,6 +121,16 @@ module TwilioTestToolkit
         @xml.at_xpath("Gather")      
       end
 
+      def formatted_digits(digits, options = {})
+        if digits.nil?
+          ''
+        elsif options[:finish_on_key]
+          digits.split(options[:finish_on_key])[0]
+        else
+          digits
+        end
+      end
+
     protected
       # New object creation
       def self.from_xml(parent, xml)
