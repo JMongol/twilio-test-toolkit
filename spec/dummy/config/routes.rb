@@ -4,6 +4,7 @@ Dummy::Application.routes.draw do
     post "test_start", :on => :collection
     post "test_action", :on => :collection
         
+    post "test_gather_finish_on_asterisk", :on => :collection
     post "test_hangup", :on => :collection
     post "test_dial", :on => :collection
     post "test_redirect", :on => :collection
