@@ -96,7 +96,7 @@ module TwilioTestToolkit
       path = gather_action
 
       # Update the root call
-      root_call.request_for_twiml!(path, :digits => digits, :method => gather_method)
+      root_call.request_for_twiml!(path, :digits => digits, :method => gather_method, :finish_on_key => gather_finish_on_key)
     end
 
     # Some basic accessors
