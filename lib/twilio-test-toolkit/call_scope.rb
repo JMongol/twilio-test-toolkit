@@ -174,7 +174,7 @@ module TwilioTestToolkit
           :format => :xml, 
           :CallSid => @root_call.sid, 
           :From => @root_call.from_number, 
-          :Digits => options[:digits] || "",
+          :Digits => formatted_digits(options[:digits], :finish_on_key => options[:finish_on_key]),
           :To => @root_call.to_number,
           :AnsweredBy => (options[:is_machine] ? "machine" : "human")
         )
