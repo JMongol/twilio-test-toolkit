@@ -125,7 +125,7 @@ module TwilioTestToolkit
         if digits.nil?
           ''
         elsif options[:finish_on_key]
-          digits.split(options[:finish_on_key])[0]
+          digits.to_s.split(options[:finish_on_key])[0]
         else
           digits
         end
