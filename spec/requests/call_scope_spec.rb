@@ -235,7 +235,7 @@ describe TwilioTestToolkit::CallScope do
         @call.current_path.should == test_action_twilio_index_path
         
         # This view says the digits we pressed - make sure
-        @call.should have_say "You entered 98765"
+        @call.should have_say "You entered 98765."
       end
       
       it "should gather without a press" do
