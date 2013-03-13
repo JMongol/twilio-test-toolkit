@@ -246,6 +246,13 @@ describe TwilioTestToolkit::CallScope do
         # We should still be on the same page
         @call.current_path.should == test_start_twilio_index_path
       end
+
+      it "should respond to the default finish key of hash" do
+        @call.within_gather do |gather|
+          gather.press "98765#"
+        end
+        @call.should have_say "You entered 98765."
+      end
     end
     
     describe "with finishOnKey specified" do

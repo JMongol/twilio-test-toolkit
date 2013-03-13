@@ -86,7 +86,7 @@ module TwilioTestToolkit
 
     def gather_finish_on_key
       raise "Not a gather" unless gather?
-      return @xml["finishOnKey"]
+      return @xml["finishOnKey"] || '#' # '#' is the default finish key if not specified
     end
 
     def press(digits)
