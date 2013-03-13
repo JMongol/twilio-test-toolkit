@@ -235,7 +235,7 @@ describe TwilioTestToolkit::CallScope do
         @call.current_path.should == test_action_twilio_index_path
         
         # This view says the digits we pressed - make sure
-        @call.should have_say "You entered 98765"
+        @call.should have_say "You entered 98765."
       end
       
       it "should gather without a press" do
@@ -246,8 +246,38 @@ describe TwilioTestToolkit::CallScope do
         # We should still be on the same page
         @call.current_path.should == test_start_twilio_index_path
       end
+
+      it "should respond to the default finish key of hash" do
+        @call.within_gather do |gather|
+          gather.press "98765#"
+        end
+        @call.should have_say "You entered 98765."
+      end
     end
     
+    describe "with finishOnKey specified" do
+      before(:each) do
+        @call = ttt_call(test_gather_finish_on_asterisk_twilio_index_path, @our_number, @their_number)
+      end
+
+      it "should strip the finish key from the digits" do
+        @call.within_gather do |gather|
+          gather.press "98765*"
+        end
+
+        @call.should have_say "You entered 98765."
+      end
+
+      it "should still accept the digits without a finish key (due to timeout)" do
+        @call.within_gather do |gather|
+          gather.press "98765"
+        end
+
+        @call.should have_say "You entered 98765."
+      end
+
+    end
+
     describe "failure" do
       before(:each) do
         @call = ttt_call(test_say_twilio_index_path, @our_number, @their_number)

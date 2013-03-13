@@ -84,6 +84,11 @@ module TwilioTestToolkit
       return @xml["method"]
     end
 
+    def gather_finish_on_key
+      raise "Not a gather" unless gather?
+      return @xml["finishOnKey"] || '#' # '#' is the default finish key if not specified
+    end
+
     def press(digits)
       raise "Not a gather" unless gather?
 
@@ -91,7 +96,7 @@ module TwilioTestToolkit
       path = gather_action
 
       # Update the root call
-      root_call.request_for_twiml!(path, :digits => digits, :method => gather_method)
+      root_call.request_for_twiml!(path, :digits => digits, :method => gather_method, :finish_on_key => gather_finish_on_key)
     end
 
     # Some basic accessors
@@ -114,6 +119,16 @@ module TwilioTestToolkit
 
       def get_gather_node
         @xml.at_xpath("Gather")      
+      end
+
+      def formatted_digits(digits, options = {})
+        if digits.nil?
+          ''
+        elsif options[:finish_on_key]
+          digits.split(options[:finish_on_key])[0]
+        else
+          digits
+        end
       end
 
     protected
@@ -159,7 +174,7 @@ module TwilioTestToolkit
           :format => :xml, 
           :CallSid => @root_call.sid, 
           :From => @root_call.from_number, 
-          :Digits => options[:digits] || "",
+          :Digits => formatted_digits(options[:digits], :finish_on_key => options[:finish_on_key]),
           :To => @root_call.to_number,
           :AnsweredBy => (options[:is_machine] ? "machine" : "human")
         )
