@@ -142,7 +142,7 @@ describe TwilioTestToolkit::CallScope do
 
   describe "dial" do
     before(:each) do
-      @call = ttt_call(test_dial_twilio_index_path, @our_number, @their_number)
+      @call = ttt_call(test_dial_with_action_twilio_index_path, @our_number, @their_number)
     end
 
     it "should have the expected dial methods" do
@@ -154,8 +154,22 @@ describe TwilioTestToolkit::CallScope do
       @call.has_dial?("18001234567").should be_true
       @call.has_dial?("12345").should be_true     # Partial match
     end
+
+    it "should not match the dial action if there isn't one" do
+      @call = ttt_call(test_dial_with_no_action_twilio_index_path, @our_number, @their_number)
+
+      @call.has_action_on_dial?("http://example.org:3000/call_me_back").should eq false
+    end
+
+    it "should match the action on dial if there is one" do
+      @call.has_action_on_dial?("http://example.org:3000/call_me_back").should be_true
+    end
+
+    it "should not match the action on dial if it's different than the one specified" do
+      @call.has_action_on_dial?("http://example.org:3000/dont_call").should be_false
+    end
   end
-  
+
   describe "hangup" do
     describe "success" do
       before(:each) do

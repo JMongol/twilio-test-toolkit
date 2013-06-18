@@ -49,6 +49,12 @@ module TwilioTestToolkit
       return false
     end
 
+    #Matches the specified action with action attribute on the dial element
+    def has_action_on_dial?(action)
+      action_on_dial = @xml.xpath("Dial").attribute("action")
+      !!action_on_dial && action_on_dial.value == action
+    end
+
     # Stuff for hangups
     def has_redirect?
       return !(@xml.at_xpath("Redirect").nil?)
