@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    twilio-test-toolkit (3.0.0)
+    twilio-test-toolkit (3.2.0)
       capybara
       uuidtools
 
@@ -44,7 +44,7 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 1.0.0)
-    childprocess (0.3.8)
+    childprocess (0.3.9)
       ffi (~> 1.0, >= 1.0.11)
     diff-lcs (1.2.1)
     erubis (2.7.0)
@@ -105,7 +105,7 @@ GEM
       rspec-expectations (~> 2.13.0)
       rspec-mocks (~> 2.13.0)
     rubyzip (0.9.9)
-    selenium-webdriver (2.30.0)
+    selenium-webdriver (2.31.0)
       childprocess (>= 0.2.5)
       multi_json (~> 1.0)
       rubyzip
