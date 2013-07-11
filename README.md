@@ -51,7 +51,7 @@ TTT depends on [Capybara](https://github.com/jnicklas/capybara). It uses Capybar
 
 TTT expects your controller actions to behave like well-behaved Twilio callbacks. That is, you need to respond to XML-formatted requests, and need to respond with a 200 OK. Twilio will not follow 301 or 302 redirects properly, and neither will TTT (see below for more details). 
 
-TTT has only been tested with RSpec on Rails. It might work on other test frameworks or other Rack-based frameworks. Feel free to submit pull requests to improve compatibility with these.
+TTT has been tested with RSpec on Rails, and limited testing has been done with Sinatra. It might work on other test frameworks or other Rack-based frameworks. Feel free to submit pull requests to improve compatibility with these.
 
 If it works with Twilio, it should work with TTT. If not, open an issue/pull request.
 
