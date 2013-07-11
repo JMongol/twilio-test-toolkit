@@ -1,6 +1,6 @@
 module TwilioTestToolkit
   # Models a scope within a call.
-  class CallScope    
+  class CallScope
     # Stuff for redirects
     def has_redirect_to?(url)
       el = get_redirect_node
@@ -79,7 +79,7 @@ module TwilioTestToolkit
     def gather?
       @xml.name == "Gather"
     end
-    
+
     def gather_action
       raise "Not a gather" unless gather?
       return @xml["action"]
@@ -120,11 +120,11 @@ module TwilioTestToolkit
 
     private
       def get_redirect_node
-        @xml.at_xpath("Redirect")      
+        @xml.at_xpath("Redirect")
       end
 
       def get_gather_node
-        @xml.at_xpath("Gather")      
+        @xml.at_xpath("Gather")
       end
 
       def formatted_digits(digits, options = {})
@@ -164,7 +164,7 @@ module TwilioTestToolkit
         p = path
 
         # Strip off ".xml" off of the end of any path
-        p = path[0...path.length - ".xml".length] if path.downcase.ends_with?(".xml")
+        p = path[0...path.length - ".xml".length] if path.downcase.match(/\.xml$/)
         return p
       end
 
@@ -175,22 +175,22 @@ module TwilioTestToolkit
         @current_path = normalize_redirect_path(path)
 
         # Post the query
-        rack_test_session_wrapper = Capybara.current_session.driver      
+        rack_test_session_wrapper = Capybara.current_session.driver
         @response = rack_test_session_wrapper.send(options[:method] || :post, @current_path,
-          :format => :xml, 
-          :CallSid => @root_call.sid, 
-          :From => @root_call.from_number, 
+          :format => :xml,
+          :CallSid => @root_call.sid,
+          :From => @root_call.from_number,
           :Digits => formatted_digits(options[:digits], :finish_on_key => options[:finish_on_key]),
           :To => @root_call.to_number,
           :AnsweredBy => (options[:is_machine] ? "machine" : "human")
         )
 
         # All Twilio responses must be a success.
-        raise "Bad response: #{@response.status}" unless @response.status == 200        
+        raise "Bad response: #{@response.status}" unless @response.status == 200
 
         # Load the xml
         data = @response.body
-        @response_xml = Nokogiri::XML.parse(data)      
+        @response_xml = Nokogiri::XML.parse(data)
         set_xml(@response_xml.at_xpath("Response"))
       end
 
