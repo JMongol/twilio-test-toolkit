@@ -8,18 +8,18 @@ module TwilioTestToolkit
       return normalize_redirect_path(el.text) == normalize_redirect_path(url)
     end
 
-    def follow_redirect
+    def follow_redirect(options = {})
       el = get_redirect_node
       raise "No redirect" if el.nil?
 
-      return CallScope.from_request(self, el.text, :method =>el[:method])
+      return CallScope.from_request(self, el.text, { :method =>el[:method]}.merge(options))
     end
 
-    def follow_redirect!
+    def follow_redirect!(options = {})
       el = get_redirect_node
       raise "No redirect" if el.nil?
 
-      request_for_twiml!(normalize_redirect_path(el.text), :method => el[:method])
+      request_for_twiml!(normalize_redirect_path(el.text), { :method => el[:method] }.merge(options))
     end
 
     # Stuff for Says
@@ -156,7 +156,7 @@ module TwilioTestToolkit
       def self.from_request(parent, path, options = {})
         new_scope = CallScope.new
         new_scope.send(:root_call=, parent.root_call)
-        new_scope.send(:request_for_twiml!, path, :digits => options[:digits] || "", :method => options[:method] || :post)
+        new_scope.send(:request_for_twiml!, path, options)
         return new_scope
       end
 
@@ -180,9 +180,10 @@ module TwilioTestToolkit
           :format => :xml,
           :CallSid => @root_call.sid,
           :From => @root_call.from_number,
-          :Digits => formatted_digits(options[:digits], :finish_on_key => options[:finish_on_key]),
+          :Digits => formatted_digits(options[:digits].to_s, :finish_on_key => options[:finish_on_key]),
           :To => @root_call.to_number,
-          :AnsweredBy => (options[:is_machine] ? "machine" : "human")
+          :AnsweredBy => (options[:is_machine] ? "machine" : "human"),
+          :CallStatus => options.fetch(:call_status, "in-progress")
         )
 
         # All Twilio responses must be a success.
