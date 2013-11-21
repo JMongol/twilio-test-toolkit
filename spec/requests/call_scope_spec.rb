@@ -80,8 +80,43 @@ describe TwilioTestToolkit::CallScope do
         # Make sure it followed
         @call.current_path.should == test_start_twilio_index_path
       end
+
+      it "should submit default params on follow_redirect" do
+        default_request_params = {
+          :format => :xml,
+          :From => "2065551212",
+          :Digits => "",
+          :To => "2065553434",
+          :AnsweredBy => "human",
+          :CallStatus => "in-progress"
+        }
+        Capybara.current_session.driver
+          .should_receive(:post)
+          .with("/twilio/test_start", hash_including(default_request_params))
+          .and_call_original
+
+        @call.follow_redirect
+      end
+
+      it "should consider options for follow_redirect!" do
+        Capybara.current_session.driver
+          .should_receive(:post)
+          .with("/twilio/test_start", hash_including(:CallStatus => "completed"))
+          .and_call_original
+
+        @call.follow_redirect!(call_status: "completed")
+      end
+
+      it "should consider options for follow_redirect" do
+        Capybara.current_session.driver
+          .should_receive(:post)
+          .with("/twilio/test_start", hash_including(:CallStatus => "completed"))
+          .and_call_original
+
+        @call.follow_redirect(call_status: "completed")
+      end
     end
-    
+
     describe "failure" do
       before(:each) do
         # Initiate a call that's not on a redirect - various calls will fail
