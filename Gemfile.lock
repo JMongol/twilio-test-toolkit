@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    twilio-test-toolkit (3.2.0)
+    twilio-test-toolkit (3.3.0)
       capybara
       uuidtools
 
