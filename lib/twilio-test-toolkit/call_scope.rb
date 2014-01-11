@@ -1,6 +1,22 @@
 module TwilioTestToolkit
   # Models a scope within a call.
   class CallScope
+
+    # Note that el is case sensitive and must match the desired
+    # TwiML element. eg. Play (correct) vs play (incorrect).
+    def self.has_element(el, options = {})
+      define_method "has_#{el.downcase}?" do |inner = nil|
+        return has_element?(el, inner, options)
+      end
+    end
+
+    # method_missing? will take care of most cases, but for elements
+    # where the preference is to have exact matching, just add a
+    # definition like:
+    #
+    # has_element "Foo", :exact_inner_match => true
+    has_element "Play", :exact_inner_match => true
+
     # Stuff for redirects
     def has_redirect_to?(url)
       el = get_redirect_node
@@ -20,52 +36,6 @@ module TwilioTestToolkit
       raise "No redirect" if el.nil?
 
       request_for_twiml!(normalize_redirect_path(el.text), { :method => el[:method] }.merge(options))
-    end
-
-    # Stuff for Says
-    def has_say?(say)
-      @xml.xpath("Say").each do |s|
-        return true if s.inner_text.include?(say)
-      end
-
-      return false
-    end
-
-    # Stuff for Plays
-    def has_play?(play)
-      @xml.xpath("Play").each do |s|
-        return true if s.inner_text == play
-      end
-
-      return false
-    end
-
-    # Stuff for Dials
-    def has_dial?(number)
-      @xml.xpath("Dial").each do |s|
-        return true if s.inner_text.include?(number)
-      end
-
-      return false
-    end
-
-    #Matches the specified action with action attribute on the dial element
-    def has_action_on_dial?(action)
-      action_on_dial = @xml.xpath("Dial").attribute("action")
-      !!action_on_dial && action_on_dial.value == action
-    end
-
-    # Stuff for hangups
-    def has_redirect?
-      return !(@xml.at_xpath("Redirect").nil?)
-    end
-
-    def has_hangup?
-      return !(@xml.at_xpath("Hangup").nil?)
-    end
-
-    def has_gather?
-      return !(@xml.at_xpath("Gather").nil?)
     end
 
     # Within gather returns a scope that's tied to the specified gather.
@@ -105,6 +75,29 @@ module TwilioTestToolkit
       root_call.request_for_twiml!(path, :digits => digits, :method => gather_method, :finish_on_key => gather_finish_on_key)
     end
 
+    # Make this easier to support TwiML elements...
+    def method_missing(meth, *args, &block)
+      # support any check for a given attribute on a given element
+      # eg. has_action_on_dial?, has_method_on_sip?, etc.
+      if meth.to_s =~ /^has_([a-zA-Z]+)_on_(.+)\?$/
+        has_attr_on_element?($2, $1, *args, &block)
+
+      # support any check for the existence of a given element
+      # with an optional check on the inner_text.
+      elsif meth.to_s =~ /^has_([a-zA-Z]+)\?$/
+        has_element?($1, *args, &block)
+
+      else
+        super # You *must* call super if you don't handle the
+              # method, otherwise you'll mess up Ruby's method
+              # lookup.
+      end
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      method_name.to_s.start_with?('has_') || super
+    end
+
     # Some basic accessors
     def current_path
       @current_path
@@ -135,6 +128,27 @@ module TwilioTestToolkit
         else
           digits
         end
+      end
+
+      def has_attr_on_element?(el, attr, action)
+        el[0] = el[0,1].upcase
+        attr_on_el = @xml.xpath(el).attribute(attr)
+        !!attr_on_el && attr_on_el.value == action
+      end
+
+      def has_element?(el, inner = nil, options = {})
+        el[0] = el[0,1].upcase
+        return !(@xml.at_xpath(el).nil?) if inner.nil?
+
+        @xml.xpath(el).each do |s|
+          if !options[:exact_inner_match].nil? && options[:exact_inner_match] == true
+            return true if s.inner_text.strip == inner
+          else
+            return true if s.inner_text.include?(inner)
+          end
+        end
+
+        return false
       end
 
     protected
