@@ -78,8 +78,19 @@ module TwilioTestToolkit
     # Make this easier to support TwiML elements...
     def method_missing(meth, *args, &block)
       # support any check for a given attribute on a given element
+      #
       # eg. has_action_on_dial?, has_method_on_sip?, etc.
-      if meth.to_s =~ /^has_([a-zA-Z]+)_on_(.+)\?$/
+      #
+      # Attribute-checking appears to be case-sensitive, which x means:
+      #
+      # has_finishOnKey_on_record?("#")
+      #
+      # I'm not crazy about this mixed case, so we can also do a more
+      # Rubyish way:
+      #
+      # has_finish_on_key_on_record?("#")
+      #
+      if meth.to_s =~ /^has_([a-zA-Z_]+)_on_([a-zA-Z]+)\?$/
         has_attr_on_element?($2, $1, *args, &block)
 
       # support any check for the existence of a given element
@@ -130,10 +141,15 @@ module TwilioTestToolkit
         end
       end
 
-      def has_attr_on_element?(el, attr, action)
+      def has_attr_on_element?(el, attr, value)
         el[0] = el[0,1].upcase
+        # convert snake case to lower camelCase
+        if attr.match(/_/)
+          attr = camel_case_lower(attr)
+        end
+
         attr_on_el = @xml.xpath(el).attribute(attr)
-        !!attr_on_el && attr_on_el.value == action
+        !!attr_on_el && attr_on_el.value == value
       end
 
       def has_element?(el, inner = nil, options = {})
@@ -149,6 +165,10 @@ module TwilioTestToolkit
         end
 
         return false
+      end
+
+      def camel_case_lower(subject)
+        subject.split('_').inject([]){ |buffer,e| buffer.push(buffer.empty? ? e : e.capitalize) }.join
       end
 
     protected
