@@ -162,7 +162,23 @@ A common thing you'll want to do is inspect the various Say elements, and check 
 	@call.has_dial?("911")	# Returns true if there's a <Dial> in the current scope 
 							# for the number. Partial matches are OK.
 	@call.has_hangup?		# Returns true if there's a <Hangup> in the current scope.
-	
+
+You can check the existence of any element by using the `#has_foo?` pattern
+where `foo` is your element. Pass in an optional string to check that the string
+is found in the element's inner text:
+
+  @call.has_sms?("Please make sure you foo the bar.")
+
+You can also check that a given attribute exists on any element using
+a `#has_bar_on_foo?` pattern:
+
+  @call.has_from_on_sms?("+18885551234")
+
+Or for camel case attributes you can do either of the following:
+
+  @call.has_finishOnKey_on_record?("#")
+  @call.has_finish_on_key_on_record?("#")
+
 These methods are available on any CallScope.
 	
 Gathers
