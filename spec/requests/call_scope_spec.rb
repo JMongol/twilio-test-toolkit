@@ -350,4 +350,27 @@ describe TwilioTestToolkit::CallScope do
       end
     end
   end
+
+  describe "record" do
+    before(:each) do
+      @call = ttt_call(test_record_twilio_index_path, @our_number, @their_number)
+    end
+
+    it "should have the expected say record methods" do
+      @call.should respond_to(:has_record?)
+    end
+
+    it "should have the right action for record"  do
+      @call.has_action_on_record?("http://example.org:3000/record_this_call").should be_true
+    end
+
+    it "should have the right maxLength for record"  do
+      @call.has_maxLength_on_record?("20").should be_true
+    end
+
+    it "should have the right finishOnKey for record"  do
+      @call.has_finishOnKey_on_record?("*").should be_true
+    end
+  end
 end
+
