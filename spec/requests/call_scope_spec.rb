@@ -365,11 +365,11 @@ describe TwilioTestToolkit::CallScope do
     end
 
     it "should have the right maxLength for record"  do
-      @call.has_maxLength_on_record?("20").should be_true
+      @call.has_max_length_on_record?("20").should be_true
     end
 
     it "should have the right finishOnKey for record"  do
-      @call.has_finishOnKey_on_record?("*").should be_true
+      @call.has_finish_on_key_on_record?("*").should be_true
     end
   end
 end
