@@ -38,13 +38,6 @@ module TwilioTestToolkit
       request_for_twiml!(normalize_redirect_path(el.text), { :method => el[:method] }.merge(options))
     end
 
-    # Within gather returns a scope that's tied to the specified gather.
-    def within_gather(&block)
-      gather_el = get_gather_node
-      raise "No gather in scope" if gather_el.nil?
-      yield(CallScope.from_xml(self, gather_el))
-    end
-
     # Stuff for gatherers
     def gather?
       @xml.name == "Gather"
@@ -98,6 +91,14 @@ module TwilioTestToolkit
       elsif meth.to_s =~ /^has_([a-zA-Z]+)\?$/
         has_element?($1, *args, &block)
 
+      # get a given element node
+      elsif meth.to_s =~ /^get_([a-z]+)_node$/
+        get_element_node($1, *args, &block)
+
+      # run a block within a given node context
+      elsif meth.to_s =~ /^within_([a-z]+)$/
+        within_element($1, *args, &block)
+
       else
         super # You *must* call super if you don't handle the
               # method, otherwise you'll mess up Ruby's method
@@ -106,7 +107,7 @@ module TwilioTestToolkit
     end
 
     def respond_to_missing?(method_name, include_private = false)
-      method_name.to_s.start_with?('has_') || super
+      method_name.to_s.match(/^(has_|get_[a-z]+_node|within_)/) || super
     end
 
     # Some basic accessors
@@ -123,14 +124,6 @@ module TwilioTestToolkit
     end
 
     private
-      def get_redirect_node
-        @xml.at_xpath("Redirect")
-      end
-
-      def get_gather_node
-        @xml.at_xpath("Gather")
-      end
-
       def formatted_digits(digits, options = {})
         if digits.nil?
           ''
@@ -139,6 +132,19 @@ module TwilioTestToolkit
         else
           digits
         end
+      end
+
+      def get_element_node(el)
+        el[0] = el[0,1].upcase
+        @xml.at_xpath(el)
+      end
+
+      # Within element returns a scope that's tied to the specified element
+      def within_element(el, &block)
+        element_node = get_element_node(el)
+
+        raise "No el in scope" if element_node.nil?
+        yield(CallScope.from_xml(self, element_node))
       end
 
       def has_attr_on_element?(el, attr, value)
