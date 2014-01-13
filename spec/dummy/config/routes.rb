@@ -7,6 +7,7 @@ Dummy::Application.routes.draw do
     post "test_hangup", :on => :collection
     post "test_dial_with_no_action", :on => :collection
     post "test_dial_with_action", :on => :collection
+    post "test_dial_with_sip", :on => :collection
     post "test_redirect", :on => :collection
     post "test_say", :on => :collection
     post "test_play", :on => :collection

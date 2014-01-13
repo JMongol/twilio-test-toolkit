@@ -203,6 +203,18 @@ describe TwilioTestToolkit::CallScope do
     it "should not match the action on dial if it's different than the one specified" do
       @call.has_action_on_dial?("http://example.org:3000/dont_call").should be_false
     end
+
+    it "should dial a sip peer with the correct structure" do
+      @call = ttt_call(test_dial_with_sip_twilio_index_path, @our_number, @their_number)
+      @call.within_dial do |dial|
+        dial.has_sip?.should be_true
+        dial.within_sip do |sip|
+          sip.has_uri?("18885551234@sip.foo.bar").should be_true
+          sip.has_username_on_uri?("foo").should be_true
+          sip.has_password_on_uri?("bar").should be_true
+        end
+      end
+    end
   end
 
   describe "hangup" do
