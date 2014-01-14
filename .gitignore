@@ -11,3 +11,5 @@ test/dummy/.sass-cache
 *.sqlite3
 
 *.log
+
+*.swp
