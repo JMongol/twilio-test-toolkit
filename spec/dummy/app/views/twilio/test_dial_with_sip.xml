@@ -1,0 +1,6 @@
+<Dial>
+  <Sip>
+    <Uri username="foo" password="bar">18885551234@sip.foo.bar</Uri>
+  </Sip>
+</Dial>
+

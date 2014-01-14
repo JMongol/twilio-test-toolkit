@@ -203,6 +203,18 @@ describe TwilioTestToolkit::CallScope do
     it "should not match the action on dial if it's different than the one specified" do
       @call.has_action_on_dial?("http://example.org:3000/dont_call").should be_false
     end
+
+    it "should dial a sip peer with the correct structure" do
+      @call = ttt_call(test_dial_with_sip_twilio_index_path, @our_number, @their_number)
+      @call.within_dial do |dial|
+        dial.has_sip?.should be_true
+        dial.within_sip do |sip|
+          sip.has_uri?("18885551234@sip.foo.bar").should be_true
+          sip.has_username_on_uri?("foo").should be_true
+          sip.has_password_on_uri?("bar").should be_true
+        end
+      end
+    end
   end
 
   describe "hangup" do
@@ -350,4 +362,27 @@ describe TwilioTestToolkit::CallScope do
       end
     end
   end
+
+  describe "record" do
+    before(:each) do
+      @call = ttt_call(test_record_twilio_index_path, @our_number, @their_number)
+    end
+
+    it "should have the expected say record methods" do
+      @call.should respond_to(:has_record?)
+    end
+
+    it "should have the right action for record"  do
+      @call.has_action_on_record?("http://example.org:3000/record_this_call").should be_true
+    end
+
+    it "should have the right maxLength for record"  do
+      @call.has_max_length_on_record?("20").should be_true
+    end
+
+    it "should have the right finishOnKey for record"  do
+      @call.has_finish_on_key_on_record?("*").should be_true
+    end
+  end
 end
+

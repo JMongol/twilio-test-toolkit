@@ -1,0 +1,2 @@
+<Record action="http://example.org:3000/record_this_call" maxLength="20" finishOnKey="*" />
+
